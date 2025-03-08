@@ -8,6 +8,7 @@ async function verifyHuman(event, callback) {
   }
   //console.log(recaptchaResponse);
   try {
+    console.log(recaptchaResponse);
     const response = await fetch("/verify-recaptcha", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

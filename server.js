@@ -26,13 +26,14 @@ app.post("/verify-recaptcha", async (req, res) => {
     secret : process.env.SECRET_KEY,
     response : req.body['g-recaptcha-response']
   })
-
+  
   const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
     method: "POST",
     body: params
   });
 
   const data = await response.json();
+  console.log(data);
   if (!data.success) {
     return res.status(400).json({ success: false, message: "reCAPTCHA failed" });
   }
