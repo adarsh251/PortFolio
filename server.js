@@ -20,19 +20,39 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+app.post("/verify-recaptcha", async (req, res) => {
+  console.log("called");
+  const params= new URLSearchParams({
+    secret : process.env.SECRET_KEY,
+    response : req.body['g-recaptcha-response']
+  })
+
+  const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+    method: "POST",
+    body: params
+  });
+
+  const data = await response.json();
+  if (!data.success) {
+    return res.status(400).json({ success: false, message: "reCAPTCHA failed" });
+  }
+
+  res.json({ success: true });
+});
+
 app.post("/send-mail", async (req, res) => {
   const { name, email, message } = req.body;
 
   const mailOptionsToAdmin = {
     from: process.env.EMAIL,
-    to: "22ucs156@lnmiit.ac.in",
+    to: "mishraadarsh25104@gmail.com",
     subject: `You've a connection request from ${name} via portfolio`,
     text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
   };
 
   const mailOptionsToUser = {
     from: process.env.EMAIL,
-    to: "22ucs156@lnmiit.ac.in",
+    to: email,
     subject: `Thank you for connecting!`,
     html: `<div><div style="font-family: Arial, Helvetica, sans-serif;"><span style="color: rgb(34, 34, 34); font-size: small;"><font face="verdana, sans-serif">Dear ${name},</font></span></div><div style="font-family: Arial, Helvetica, sans-serif;"><span style="color: rgb(34, 34, 34); font-size: small;"><font face="verdana, sans-serif">
  </font></span></div><div style="font-family: Arial, Helvetica, sans-serif;"><span style="color: rgb(34, 34, 34); font-size: small;"><font face="verdana, sans-serif">Thank you for connecting with me. I'll reach out to you soon.</font></span></div></div>
